@@ -1,101 +1,209 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import React, { useState, useEffect } from 'react';
+import Navbar from '@/components/Navbar';
+import CheckoutSummary from '@/components/CheckoutSummary';
+import CheckoutInstructions from '@/components/CheckoutInstructions';
+import CheckoutForm from '@/components/CheckoutForm';
+import OrderTrackerModal from '@/components/OrderTrackerModal';
+import PolicyModals, { PolicyType } from '@/components/PolicyModals';
+import Footer from '@/components/Footer';
+import CheckoutFaq from '@/components/CheckoutFaq';
+import { OrderStatus, Order } from '@/types';
+
+interface PublicSettings {
+  toolName: string;
+  productName: string;
+  productDescription: string;
+  priceUsd: number;
+  priceUsdt: number;
+  merchantWalletAddress: string;
+  network: string;
+  usdtContractAddress: string;
+  supportEmail: string;
+  companyName: string;
+  deliveryTimeframe: string;
+  manualReviewEstimatedMinutes: number;
+}
+
+const DEFAULT_SETTINGS: PublicSettings = {
+  toolName: 'ApexCore Pro',
+  productName: 'Tool Activation Key',
+  productDescription: 'Software tool activation license.',
+  priceUsd: 200,
+  priceUsdt: 200,
+  merchantWalletAddress: 'TYDZS92Wvd18qM8263WRDQsjVp9dGZp4tT',
+  network: 'TRON (TRC20)',
+  usdtContractAddress: 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
+  supportEmail: 'support@apexcore-software.io',
+  companyName: 'ApexCore Technologies Inc.',
+  deliveryTimeframe: 'Within 15–45 minutes following TRON blockchain confirmation',
+  manualReviewEstimatedMinutes: 30,
+};
+
+export default function CheckoutPage() {
+  const [settings, setSettings] = useState<PublicSettings>(DEFAULT_SETTINGS);
+  const [orderId, setOrderId] = useState<string>('');
+  const [orderStatus, setOrderStatus] = useState<OrderStatus>('AWAITING_PAYMENT');
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isTrackerOpen, setIsTrackerOpen] = useState(false);
+  const [activePolicy, setActivePolicy] = useState<PolicyType>(null);
+
+  // Initialize or fetch public settings and create a unique server order
+  useEffect(() => {
+    async function initCheckout() {
+      try {
+        // 1. Fetch settings
+        const settingsRes = await fetch('/api/settings');
+        if (settingsRes.ok) {
+          const settingsData = await settingsRes.json();
+          setSettings((prev) => ({ ...prev, ...settingsData }));
+        }
+
+        // 2. Check for existing order in localStorage or create a fresh one
+        const savedOrderId = localStorage.getItem('apex_active_order_id');
+        if (savedOrderId) {
+          const checkRes = await fetch(`/api/orders/${savedOrderId}`);
+          if (checkRes.ok) {
+            const checkData = await checkRes.json();
+            if (checkData.success && checkData.order) {
+              setOrderId(checkData.order.id);
+              setOrderStatus(checkData.order.status);
+              return;
+            }
+          }
+        }
+
+        // Create new server order reference
+        const createRes = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (createRes.ok) {
+          const createData = await createRes.json();
+          if (createData.success && createData.order) {
+            setOrderId(createData.order.id);
+            setOrderStatus(createData.order.status);
+            localStorage.setItem('apex_active_order_id', createData.order.id);
+          }
+        }
+      } catch (err) {
+        console.error('Checkout initialization error:', err);
+        setOrderId((prev) =>
+          prev || `ORD-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`
+        );
+      }
+    }
+
+    initCheckout();
+  }, []);
+
+  const handleRefreshOrder = async () => {
+    if (!orderId) return;
+    setIsRefreshing(true);
+    try {
+      const res = await fetch(`/api/orders/${orderId}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.order) {
+          setOrderStatus(data.order.status);
+        }
+      }
+    } catch (err) {
+      console.error('Refresh error', err);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  const handleSubmissionSuccess = (submittedOrder: Order) => {
+    if (submittedOrder && submittedOrder.status) {
+      setOrderStatus(submittedOrder.status);
+    }
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
+      {/* Compact Header */}
+      <Navbar
+        toolName={settings.toolName}
+        onOpenTracker={() => setIsTrackerOpen(true)}
+        onOpenSupport={() => setActivePolicy('support')}
+      />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      {/* Main Checkout Container */}
+      <main className="flex-1 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10 w-full">
+        {/* Page Title & Subtitle */}
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+            Activate your tool
+          </h1>
+          <p className="text-sm text-slate-600 mt-1">
+            Complete your payment to request your activation key.
+          </p>
         </div>
+
+        {/* Two-Column Responsive Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Left Column: Instructions and Verification Form */}
+          <div className="lg:col-span-7 space-y-6 order-2 lg:order-1">
+            {/* Payment Steps & Network Warning */}
+            <div className="rounded-lg border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
+              <CheckoutInstructions priceUsdt={settings.priceUsdt} />
+            </div>
+
+            {/* Transaction Verification Submission Form */}
+            <CheckoutForm
+              orderId={orderId}
+              expectedAmount={settings.priceUsdt}
+              onSubmissionSuccess={handleSubmissionSuccess}
+              onOpenTracker={() => setIsTrackerOpen(true)}
+            />
+          </div>
+
+          {/* Right Column: Order Summary, Wallet Address & QR Code */}
+          <div className="lg:col-span-5 order-1 lg:order-2 lg:sticky lg:top-20">
+            <CheckoutSummary
+              orderId={orderId}
+              priceUsdt={settings.priceUsdt}
+              productName={settings.productName}
+              orderDescription={settings.productDescription}
+              walletAddress={settings.merchantWalletAddress}
+              status={orderStatus}
+              onRefreshOrder={handleRefreshOrder}
+              isRefreshing={isRefreshing}
+            />
+          </div>
+        </div>
+
+        {/* Customer Guidance & FAQ */}
+        <CheckoutFaq />
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+      {/* Footer without public admin link */}
+      <Footer
+        toolName={settings.toolName}
+        supportEmail={settings.supportEmail}
+        companyName={settings.companyName}
+        onOpenPolicy={(policy) => setActivePolicy(policy)}
+        onOpenTracker={() => setIsTrackerOpen(true)}
+      />
+
+      {/* Order Tracker Modal */}
+      <OrderTrackerModal
+        isOpen={isTrackerOpen}
+        onClose={() => setIsTrackerOpen(false)}
+        initialOrderId={orderId}
+      />
+
+      {/* Policy Modals */}
+      <PolicyModals
+        activePolicy={activePolicy}
+        onClose={() => setActivePolicy(null)}
+        supportEmail={settings.supportEmail}
+        companyName={settings.companyName}
+      />
     </div>
   );
 }

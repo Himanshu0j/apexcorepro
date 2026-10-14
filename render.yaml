@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: apexcore-activation-portal
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PUPPETEER_SKIP_DOWNLOAD
+        value: "true"
+      - key: NEXT_PUBLIC_MERCHANT_WALLET_ADDRESS
+        value: TYDZS92Wvd18qM8263WRDQsjVp9dGZp4tT
+      - key: NEXT_PUBLIC_TOOL_NAME
+        value: ApexCore Pro
+      - key: NEXT_PUBLIC_SUPPORT_EMAIL
+        value: support@apexcore-software.io
+      - key: ADMIN_PASSWORD
+        value: AdminSecure2026!

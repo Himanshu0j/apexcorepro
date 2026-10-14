@@ -1,0 +1,109 @@
+{
+  "settings": {
+    "toolName": "ApexCore Pro",
+    "productName": "Tool Activation Key",
+    "productDescription": "Official lifetime software tool activation license with priority updates.",
+    "priceUsd": 200,
+    "priceUsdt": 200,
+    "merchantWalletAddress": "TYDZS92Wvd18qM8263WRDQsjVp9dGZp4tT",
+    "network": "TRON (TRC20)",
+    "usdtContractAddress": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+    "supportEmail": "support@apexcore-software.io",
+    "companyName": "ApexCore Technologies Inc.",
+    "manualReviewEstimatedMinutes": 30,
+    "deliveryTimeframe": "Within 15–45 minutes following TRON blockchain confirmation",
+    "enableAutomaticTronGridCheck": true,
+    "tronGridApiKey": ""
+  },
+  "orders": [
+    {
+      "id": "ORD-2026-98104",
+      "createdAt": "2026-10-14T08:15:00.000Z",
+      "updatedAt": "2026-10-14T08:35:00.000Z",
+      "productName": "Tool Activation Key",
+      "orderDescription": "Software tool activation license.",
+      "priceUsd": 200,
+      "amountUsdt": 200,
+      "network": "TRON (TRC20)",
+      "merchantAddress": "TYDZS92Wvd18qM8263WRDQsjVp9dGZp4tT",
+      "customerName": "Marcus Sterling",
+      "customerEmail": "m.sterling@enterprise-sys.org",
+      "txHash": "a1f8c92e54d890b21a329d47c61e892c9b8f2d5e1a3b4c5d6e7f8a9b0c1d2e3f",
+      "amountSent": 200,
+      "senderAddress": "TLyqzVGLV1srkB7dToTApsgihc4T9bGw74",
+      "status": "KEY_ISSUED",
+      "activationKey": "APEX-8931-E41A-98C3-7B14",
+      "verificationType": "MANUAL_ADMIN",
+      "verifiedAt": "2026-10-14T08:32:00.000Z",
+      "verificationLogs": [
+        "Order created: ORD-2026-98104",
+        "Transaction submitted: a1f8c92e54d890b21a329d47c61e892c9b8f2d5e1a3b4c5d6e7f8a9b0c1d2e3f",
+        "Manual blockchain review performed and approved by Admin",
+        "License key APEX-8931-E41A-98C3-7B14 allocated from pool"
+      ]
+    },
+    {
+      "id": "ORD-2026-77342",
+      "createdAt": "2026-10-14T09:40:00.000Z",
+      "updatedAt": "2026-10-14T09:55:00.000Z",
+      "productName": "Tool Activation Key",
+      "orderDescription": "Software tool activation license.",
+      "priceUsd": 200,
+      "amountUsdt": 200,
+      "network": "TRON (TRC20)",
+      "merchantAddress": "TYDZS92Wvd18qM8263WRDQsjVp9dGZp4tT",
+      "customerName": "Elena Rostova",
+      "customerEmail": "elena.rostova@quantumcode.dev",
+      "txHash": "c4d5e6f7a8b90123456789abcdef0123456789abcdef0123456789abcdef0123",
+      "amountSent": 200,
+      "senderAddress": "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDm",
+      "status": "VERIFICATION_PENDING",
+      "verificationLogs": [
+        "Order created: ORD-2026-77342",
+        "Transaction submitted: c4d5e6f7a8b90123456789abcdef0123456789abcdef0123456789abcdef0123",
+        "Queued for TRON blockchain verification and administrative review"
+      ]
+    }
+  ],
+  "keysPool": [
+    {
+      "id": "KEY-1",
+      "key": "APEX-8931-E41A-98C3-7B14",
+      "status": "ISSUED",
+      "orderId": "ORD-2026-98104",
+      "issuedToEmail": "m.sterling@enterprise-sys.org",
+      "issuedAt": "2026-10-14T08:32:00.000Z",
+      "createdAt": "2026-10-14T00:00:00.000Z"
+    },
+    {
+      "id": "KEY-2",
+      "key": "APEX-7742-B19F-64D0-A392",
+      "status": "AVAILABLE",
+      "createdAt": "2026-10-14T00:00:00.000Z"
+    },
+    {
+      "id": "KEY-3",
+      "key": "APEX-5109-C82D-31EA-8841",
+      "status": "AVAILABLE",
+      "createdAt": "2026-10-14T00:00:00.000Z"
+    },
+    {
+      "id": "KEY-4",
+      "key": "APEX-9481-F37A-5021-DE83",
+      "status": "AVAILABLE",
+      "createdAt": "2026-10-14T00:00:00.000Z"
+    },
+    {
+      "id": "KEY-5",
+      "key": "APEX-6238-A91C-44F7-109B",
+      "status": "AVAILABLE",
+      "createdAt": "2026-10-14T00:00:00.000Z"
+    },
+    {
+      "id": "KEY-6",
+      "key": "APEX-3890-D55E-27B8-941A",
+      "status": "AVAILABLE",
+      "createdAt": "2026-10-14T00:00:00.000Z"
+    }
+  ]
+}
