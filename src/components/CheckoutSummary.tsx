@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { QRCodeSVG } from 'qrcode.react';
-import { Copy, Check, QrCode, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { Copy, Check, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { OrderStatus } from '@/types';
 
 interface CheckoutSummaryProps {
@@ -205,22 +204,6 @@ export default function CheckoutSummary({
           </div>
         </div>
 
-        {/* QR Code */}
-        <div className="flex flex-col items-center justify-center p-4 rounded-md border border-slate-200 bg-slate-50/60">
-          <div className="p-2 bg-white rounded border border-slate-200 shadow-sm">
-            <QRCodeSVG
-              value={walletAddress}
-              size={150}
-              level="M"
-              includeMargin={false}
-              className="w-36 h-36"
-            />
-          </div>
-          <p className="mt-2 text-[11px] text-slate-500 text-center flex items-center gap-1">
-            <QrCode className="h-3 w-3 text-slate-400" />
-            <span>Encodes the receiving TRON address</span>
-          </p>
-        </div>
 
         {/* Notice on network fee */}
         <div className="rounded-md border border-slate-200 bg-slate-50 p-3 text-[11px] text-slate-600 space-y-1">

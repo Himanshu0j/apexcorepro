@@ -162,7 +162,7 @@ export default function CheckoutPage() {
             />
           </div>
 
-          {/* Right Column: Order Summary, Wallet Address & QR Code */}
+          {/* Right Column: Order Summary & Receiving Address */}
           <div className="lg:col-span-5 order-1 lg:order-2 lg:sticky lg:top-20">
             <CheckoutSummary
               orderId={orderId}

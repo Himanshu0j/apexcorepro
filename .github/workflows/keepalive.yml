@@ -1,0 +1,18 @@
+name: Render Keep Alive Service
+
+on:
+  schedule:
+    # Runs every 10 minutes (cron runs in UTC)
+    - cron: '*/10 * * * *'
+  workflow_dispatch: # Allows manual trigger anytime from GitHub Actions tab
+
+jobs:
+  ping:
+    name: Ping ApexCore Pro Server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Keep-Alive HTTP Request
+        run: |
+          echo "Pinging ApexCore Pro payment portal to keep container warm..."
+          curl -s -f -m 30 "https://apexcorepro.onrender.com/api/health" || curl -s -f -m 45 "https://apexcorepro.onrender.com/" || true
+          echo "Keep-alive ping completed successfully."
