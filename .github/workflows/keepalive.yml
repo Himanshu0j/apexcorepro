@@ -1,18 +1,30 @@
-name: Render Keep Alive Service
+name: Render Continuous Warm-Up & Keep Alive
 
 on:
   schedule:
-    # Runs every 10 minutes (cron runs in UTC)
-    - cron: '*/10 * * * *'
-  workflow_dispatch: # Allows manual trigger anytime from GitHub Actions tab
+    # Runs every 5 minutes (GitHub minimum schedule interval)
+    - cron: '*/5 * * * *'
+  workflow_dispatch: # Allows manual trigger anytime
+
+concurrency:
+  group: render-keepalive
+  cancel-in-progress: true
 
 jobs:
   ping:
-    name: Ping ApexCore Pro Server
+    name: Continuous 60s Keep-Alive Loop
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - name: Send Keep-Alive HTTP Request
+      - name: Ping Loop (every 60s for 6 minutes)
         run: |
-          echo "Pinging ApexCore Pro payment portal to keep container warm..."
-          curl -s -f -m 30 "https://apexcorepro.onrender.com/api/health" || curl -s -f -m 45 "https://apexcorepro.onrender.com/" || true
-          echo "Keep-alive ping completed successfully."
+          echo "Starting continuous keep-alive loop to prevent Render spin-down..."
+          for i in {1..6}; do
+            echo "--- Ping $i at $(date -u) ---"
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -m 25 "https://apexcorepro.onrender.com/api/health" || echo "000")
+            echo "Response HTTP Status: $HTTP_CODE"
+            if [ $i -lt 6 ]; then
+              sleep 60
+            fi
+          done
+          echo "Warm-up loop cycle completed."
