@@ -3,8 +3,9 @@ import path from 'path';
 import { Order, LicenseKeyItem, SystemSettings, AdminStats } from '@/types';
 import initialData from '@/data/initial-data.json';
 
-// Storage location: runtime data file
-const DATA_DIR = path.join(process.cwd(), 'data');
+// Storage location: runtime data file (with serverless /tmp support for Vercel/AWS)
+const isServerless = process.env.VERCEL === '1' || !!process.env.AWS_LAMBDA_FUNCTION_NAME;
+const DATA_DIR = isServerless ? path.join('/tmp', 'apexcore-data') : path.join(process.cwd(), 'data');
 const DATA_FILE = path.join(DATA_DIR, 'store.json');
 
 interface DatabaseSchema {
